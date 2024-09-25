@@ -10,7 +10,15 @@ export function add(numbers: string): number {
 
   if (numbers.startsWith("//")) {
     const delimiterEndIndex = numbers.indexOf("\n");
-    delimiter = numbers.substring(2, delimiterEndIndex);
+    const delimiterSection = numbers.substring(2, delimiterEndIndex);
+
+    if (delimiterSection.startsWith("[") && delimiterSection.endsWith("]")) {
+      // delimiter section is like [***] , so we want to ignore first and last character
+      delimiter = delimiterSection.substring(1, delimiterSection.length - 1);
+    } else {
+      delimiter = delimiterSection;
+    }
+
     numberPart = numbers.substring(delimiterEndIndex + 1);
   }
 
@@ -33,7 +41,13 @@ function splitNumbers(input: string, delimiter: string = ","): string[] {
   for (let i = 0; i < input.length; i++) {
     const char = input[i];
 
-    if (char === delimiter || char === "," || char === "\n") {
+    if (i + delimiter.length <= input.length && input.substring(i, i + delimiter.length) === delimiter) {
+      if (currentNumber !== "") {
+        result.push(currentNumber);
+        currentNumber = "";
+      }
+      i += delimiter.length - 1;
+    } else if (char === "," || char === "\n") {
       if (currentNumber !== "") {
         result.push(currentNumber);
         currentNumber = "";
