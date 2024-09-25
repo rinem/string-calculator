@@ -1,8 +1,33 @@
 export function add(numbers: string): number {
-  if (numbers === "") return 0;
+  if (numbers === "") {
+    return 0;
+  }
 
-  const numArray = numbers.split(",");
-  const parsedNumbers = numArray.map((num) => parseInt(num));
+  const numberArray = splitNumbers(numbers);
 
-  return parsedNumbers.reduce((sum, current) => sum + current, 0);
+  return numberArray.reduce((sum, num) => sum + parseInt(num), 0);
+}
+
+function splitNumbers(input: string): string[] {
+  const result: string[] = [];
+  let currentNumber = "";
+
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+
+    if (char === "," || char === "\n") {
+      if (currentNumber !== "") {
+        result.push(currentNumber);
+        currentNumber = "";
+      }
+    } else {
+      currentNumber += char;
+    }
+  }
+
+  if (currentNumber !== "") {
+    result.push(currentNumber);
+  }
+
+  return result;
 }
