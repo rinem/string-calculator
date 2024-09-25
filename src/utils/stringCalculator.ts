@@ -1,8 +1,8 @@
 export function add(numbers: string): number {
   if (numbers === "") return 0;
 
-  const parsedNumber = parseInt(numbers);
-  if (!isNaN(parsedNumber)) return parsedNumber;
+  const numArray = numbers.split(",");
+  const parsedNumbers = numArray.map((num) => parseInt(num));
 
-  return 0;
+  return parsedNumbers.reduce((sum, current) => sum + current, 0);
 }
