@@ -14,4 +14,9 @@ describe("String Calculator", () => {
     expect(add("1,2")).toBe(3);
     expect(add("3,7")).toBe(10);
   });
+
+  test("should return the sum of multiple numbers", () => {
+    expect(add("1,2,3,4")).toBe(10);
+    expect(add("10,20,30")).toBe(60);
+  });
 });
