@@ -14,6 +14,13 @@ export function add(numbers: string): number {
 
   const numberArray = splitNumbers(numberPart, delimiter);
 
+  const parsedNumbers = numberArray.map((num) => parseInt(num));
+  const negatives = parsedNumbers.filter((num) => num < 0);
+
+  if (negatives.length > 0) {
+    throw new Error(`negative numbers not allowed ${negatives.join(",")}`);
+  }
+
   return numberArray.reduce((sum, num) => sum + parseInt(num), 0);
 }
 
