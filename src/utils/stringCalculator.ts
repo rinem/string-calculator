@@ -2,6 +2,8 @@ export function add(numbers: string): number {
   if (numbers === "") {
     return 0;
   }
+  // we get \\n instead of \n from react input
+  numbers = numbers.replace(/\\n/g, "\n");
 
   let delimiter = ",";
   let numberPart = numbers;
