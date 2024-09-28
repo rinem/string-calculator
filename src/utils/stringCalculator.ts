@@ -31,6 +31,10 @@ export function add(numbers: string): number {
     throw new Error(`negative numbers not allowed ${negatives.join(",")}`);
   }
 
+  if (delimiter === "*") {
+    return parsedNumbers.reduce((product, num) => product * num, 1);
+  }
+
   return parsedNumbers.reduce((sum, num) => sum + num, 0);
 }
 

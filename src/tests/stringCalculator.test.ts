@@ -43,4 +43,9 @@ describe("String Calculator", () => {
     expect(add("//[***]\n1***2***3")).toBe(6);
     expect(add("//[;;]\n3;;2;;4")).toBe(9);
   });
+
+  test("should handle multiplication if delimiter is *", () => {
+    expect(add("//*\n1*2")).toBe(2);
+    expect(add("//*\n3*4*5")).toBe(60);
+  })
 });
