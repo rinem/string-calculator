@@ -1,11 +1,28 @@
+// NOTE: should update name to something like "calculate" as it can perform multiply also
 export function add(numbers: string): number {
   if (numbers === "") {
     return 0;
   }
-  // we get \\n instead of \n from react input
-  numbers = numbers.replace(/\\n/g, "\n");
 
-  let delimiter = ",";
+  // We get \\n instead of \n from react input 
+  numbers = numbers.replace("\\n", "\n");
+
+  const { delimiters, numberPart } = extractDelimiter(numbers);
+
+  const numberArray = splitNumbers(numberPart, delimiters);
+
+  const parsedNumbers = parseNumbers(numberArray);
+  
+  // NOTE: should extend to include more handlers
+  handleNegativeNumbers(parsedNumbers);
+
+  const operation = getOperation(delimiters);
+  
+  return performOperation(parsedNumbers, operation);
+}
+
+function extractDelimiter(numbers: string): { delimiters: string[], numberPart: string } {
+  let delimiters = [",", "\n"];
   let numberPart = numbers;
 
   if (numbers.startsWith("//")) {
@@ -13,57 +30,57 @@ export function add(numbers: string): number {
     const delimiterSection = numbers.substring(2, delimiterEndIndex);
 
     if (delimiterSection.startsWith("[") && delimiterSection.endsWith("]")) {
-      // delimiter section is like [***] , so we want to ignore first and last character
-      delimiter = delimiterSection.substring(1, delimiterSection.length - 1);
+      delimiters = delimiterSection.slice(1, -1).split("][");
     } else {
-      delimiter = delimiterSection;
+      delimiters = [delimiterSection];
     }
 
     numberPart = numbers.substring(delimiterEndIndex + 1);
   }
 
-  const numberArray = splitNumbers(numberPart, delimiter);
+  return { delimiters, numberPart };
+}
 
-  const parsedNumbers = numberArray.map((num) => parseInt(num)).filter((num) => num <= 1000);
-  const negatives = parsedNumbers.filter((num) => num < 0);
+function splitNumbers(input: string, delimiters: string[]): string[] {
+  let result = [input];
+
+  delimiters.forEach(delim => {
+    let temp: string[] = [];
+    result.forEach(part => {
+      temp = temp.concat(part.split(delim));
+    });
+    result = temp;
+  });
+
+  return result.filter(Boolean);
+}
+
+function parseNumbers(numberArray: string[]): number[] {
+  return numberArray
+    .map(num => parseInt(num))
+    .filter(num => !isNaN(num) && num <= 1000);
+}
+
+function handleNegativeNumbers(numbers: number[]): void {
+  const negatives = numbers.filter(num => num < 0);
 
   if (negatives.length > 0) {
     throw new Error(`negative numbers not allowed ${negatives.join(",")}`);
   }
-
-  if (delimiter === "*") {
-    return parsedNumbers.reduce((product, num) => product * num, 1);
-  }
-
-  return parsedNumbers.reduce((sum, num) => sum + num, 0);
 }
 
-function splitNumbers(input: string, delimiter: string = ","): string[] {
-  const result: string[] = [];
-  let currentNumber = "";
-
-  for (let i = 0; i < input.length; i++) {
-    const char = input[i];
-
-    if (i + delimiter.length <= input.length && input.substring(i, i + delimiter.length) === delimiter) {
-      if (currentNumber !== "") {
-        result.push(currentNumber);
-        currentNumber = "";
-      }
-      i += delimiter.length - 1;
-    } else if (char === "," || char === "\n") {
-      if (currentNumber !== "") {
-        result.push(currentNumber);
-        currentNumber = "";
-      }
-    } else {
-      currentNumber += char;
-    }
+function getOperation(delimiters: string[]): "sum" | "multiply" {
+  if (delimiters.includes("*")) {
+    return "multiply";
   }
+  return "sum";
+}
 
-  if (currentNumber !== "") {
-    result.push(currentNumber);
+function performOperation(numbers: number[], operation: "sum" | "multiply"): number {
+  if (operation === "sum") {
+    return numbers.reduce((total, num) => total + num, 0);
+  } else if (operation === "multiply") {
+    return numbers.reduce((total, num) => total * num, 1);
   }
-
-  return result;
+  return 0;
 }
