@@ -47,5 +47,17 @@ describe("String Calculator", () => {
   test("should handle multiplication if delimiter is *", () => {
     expect(add("//*\n1*2")).toBe(2);
     expect(add("//*\n3*4*5")).toBe(60);
+  });
+
+  // we want to log the error if there is some negative numbers
+  test("should check if error is logged when there are some negative numbers", () => {
+    const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation();
+
+    expect(() => add("1,-2,3,-5")).toThrow("negative numbers not allowed -2,-5");
+    expect(console.error).toHaveBeenCalledWith("negative numbers not allowed -2,-5");
+    expect(console.error).toHaveBeenCalledTimes(1);
+
+    
   })
+
 });
